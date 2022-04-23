@@ -24,7 +24,7 @@ class MainActivity : AppCompatActivity() {
             this,
             LevelActivity::class.java
         );
-        intent.putExtra("levelInput", "hi Ahtem input")
+        intent.putExtra("level", 1)
         startActivity(intent);
     }
 }
