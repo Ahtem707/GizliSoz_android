@@ -13,6 +13,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.children
+import androidx.core.view.isVisible
 import com.iw.gizlysoz.Level.Level
 import com.iw.gizlysoz.Level.LevelViewModel
 import com.iw.gizlysoz.Level.Words
@@ -21,9 +22,12 @@ data class LevelActivityInput(val level: Int)
 
 class LevelActivity : AppCompatActivity() {
 
+    private lateinit var view: View
+    private lateinit var verticalLayout: LinearLayout
+
     private val cellSize = 150
     private val cellMargin = 20
-    private var matrix: Array<Array<FrameLayout?>>? = null
+    private lateinit var matrix: Array<Array<FrameLayout?>>
 
     private val viewModel = LevelViewModel()
 
@@ -31,16 +35,32 @@ class LevelActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.level_activity)
+        setupSubview()
 
-        val actionBar = supportActionBar
-        actionBar!!.title = "Level 1"
-
+        // Получить текущий уровень
         val level = getIntent().getIntExtra("level",0)
+
+        // Установить название экрана
+        val actionBar = supportActionBar
+        actionBar?.title = getString(R.string.level) + " $level"
+
+        // Создать пустую матрицу
+        createMatrix(0)
+
+        // Получить данные по текущему уровню
         viewModel.jsonFetch(this, level)
-        fillContent()
+
+        // Обновить матрицу
+        updateMatrix()
     }
 
-    private fun fillContent() {
+    private fun setupSubview() {
+        view = findViewById(R.id.view)
+        verticalLayout = findViewById(R.id.verticalLayout)
+    }
+
+    private fun updateMatrix() {
+
         if(viewModel.levelData == null) return
         val level = viewModel.levelData!!
         // Проверка размера ячейки с длиной слова
@@ -48,13 +68,25 @@ class LevelActivity : AppCompatActivity() {
         // Проверка длины слова с количеством координат
         if(!checkWordLength(level.words)) return
 
-        createMatrix(level.size)
+        // Cоздать новую матрицу, если нужно
+        if(level.size != matrix.count()) {
+            createMatrix(level.size)
+        }
 
+        // Скрыть все ячейки
+        for(row in matrix) {
+            for(item in row) {
+                item?.visibility = View.INVISIBLE
+            }
+        }
+
+        // Заполнить матрицу данными
         level.words.forEach {
             for(i in it.value.chars.indices) {
-                val cell = matrix?.get(it.value.x[i])?.get(it.value.y[i])
+                val cell = matrix[it.value.x[i]][it.value.y[i]]
                 val content = (cell?.children?.first() as FrameLayout)
                 val label = (content.children.first() as TextView)
+                cell.isVisible = true
                 label.text = it.value.chars[i]
             }
         }
@@ -76,7 +108,6 @@ class LevelActivity : AppCompatActivity() {
 
     @SuppressLint("ResourceType")
     private fun createMatrix(size: Int) {
-        val verticalLayout = findViewById<LinearLayout>(R.id.verticalLayout)
 
         this.matrix = Array(size) { Array(size) {null} }
         for (x in 0 until size) {
@@ -84,7 +115,7 @@ class LevelActivity : AppCompatActivity() {
             horizontalLayout.orientation = LinearLayout.HORIZONTAL
             for(y in 0 until size) {
                 val cell = makeCell("")
-                this.matrix!![y][x] = cell
+                this.matrix[y][x] = cell
                 horizontalLayout.addView(cell)
             }
             verticalLayout.addView(horizontalLayout)
@@ -107,13 +138,13 @@ class LevelActivity : AppCompatActivity() {
 
         content.background = roundedCornersDrawable(
             2.dpToPixels(applicationContext), // border width in pixels
-            R.color.black.toColor(this), // border color
+            R.color.cellBackground.toColor(this), // border color
             10.dpToPixels(applicationContext).toFloat(), // corners radius
-            R.color.white.toColor(this)
+            R.color.cellBackground.toColor(this)
         )
 
         label.text = text
-        label.textSize = 20F
+        label.textSize = 26F
         label.setTextColor(R.color.black.toColor(this))
         content.addView(label)
         container.addView(content)
