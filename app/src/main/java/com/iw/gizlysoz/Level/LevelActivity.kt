@@ -41,6 +41,7 @@ class LevelActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.level_activity)
         setupSubview()
+        hideSystemUI(window, view)
 
         // Получить текущий уровень
         val level = getIntent().getIntExtra("level",0)
@@ -50,6 +51,7 @@ class LevelActivity : AppCompatActivity() {
         actionBar?.title = getString(R.string.level) + " $level"
         actionBar?.setHomeButtonEnabled(true)
         actionBar?.setDisplayHomeAsUpEnabled(true)
+        actionBar?.show()
 
         // Создать пустую матрицу
         createMatrix(0)
@@ -59,6 +61,11 @@ class LevelActivity : AppCompatActivity() {
 
         // Обновить матрицу
         updateMatrix()
+    }
+
+    override fun onWindowFocusChanged(hasFocus: Boolean) {
+        super.onWindowFocusChanged(hasFocus)
+        hideSystemUI(window, view)
     }
 
     private fun setupSubview() {
