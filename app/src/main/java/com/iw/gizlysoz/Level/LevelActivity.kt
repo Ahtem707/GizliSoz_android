@@ -7,16 +7,18 @@ import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.util.Log
 import android.view.Gravity
+import android.view.MenuItem
 import android.view.View
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.NavUtils
 import androidx.core.view.children
 import androidx.core.view.isVisible
-import com.iw.gizlysoz.Level.Level
 import com.iw.gizlysoz.Level.LevelViewModel
 import com.iw.gizlysoz.Level.Words
+
 
 data class LevelActivityInput(val level: Int)
 
@@ -43,6 +45,8 @@ class LevelActivity : AppCompatActivity() {
         // Установить название экрана
         val actionBar = supportActionBar
         actionBar?.title = getString(R.string.level) + " $level"
+        actionBar?.setHomeButtonEnabled(true)
+        actionBar?.setDisplayHomeAsUpEnabled(true)
 
         // Создать пустую матрицу
         createMatrix(0)
@@ -55,7 +59,7 @@ class LevelActivity : AppCompatActivity() {
     }
 
     private fun setupSubview() {
-        view = findViewById(R.id.view)
+        view = findViewById(R.id.LevelView)
         verticalLayout = findViewById(R.id.verticalLayout)
     }
 
