@@ -64,7 +64,6 @@ class LevelActivity : AppCompatActivity() {
     }
 
     private fun updateMatrix() {
-
         if(viewModel.levelData == null) return
         val level = viewModel.levelData!!
         // Проверка размера ячейки с длиной слова
@@ -89,9 +88,23 @@ class LevelActivity : AppCompatActivity() {
             for(i in it.value.chars.indices) {
                 val cell = matrix[it.value.x[i]][it.value.y[i]]
                 val content = (cell?.children?.first() as FrameLayout)
-                val label = (content.children.first() as TextView)
                 cell.isVisible = true
-                label.text = it.value.chars[i]
+            }
+        }
+    }
+
+    private fun openWord(text: String) {
+        if(viewModel.levelData == null) return
+        val level = viewModel.levelData!!
+
+        level.words.forEach {
+            if(it.key == text) {
+                for(i in it.value.chars.indices) {
+                    val cell = matrix[it.value.x[i]][it.value.y[i]]
+                    val content = (cell?.children?.first() as FrameLayout)
+                    val label = (content.children.first() as TextView)
+                    label.text = it.value.chars[i]
+                }
             }
         }
     }
