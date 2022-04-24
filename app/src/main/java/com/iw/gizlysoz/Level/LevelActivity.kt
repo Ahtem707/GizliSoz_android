@@ -5,17 +5,18 @@ import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
+import android.text.Editable
 import android.util.Log
 import android.view.Gravity
-import android.view.MenuItem
 import android.view.View
+import android.widget.Button
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.NavUtils
 import androidx.core.view.children
 import androidx.core.view.isVisible
+import com.google.android.material.textfield.TextInputEditText
 import com.iw.gizlysoz.Level.LevelViewModel
 import com.iw.gizlysoz.Level.Words
 
@@ -26,6 +27,8 @@ class LevelActivity : AppCompatActivity() {
 
     private lateinit var view: View
     private lateinit var verticalLayout: LinearLayout
+    private lateinit var wordInput: TextInputEditText
+    private lateinit var wordBtn: Button
 
     private val cellSize = 150
     private val cellMargin = 20
@@ -61,6 +64,15 @@ class LevelActivity : AppCompatActivity() {
     private fun setupSubview() {
         view = findViewById(R.id.LevelView)
         verticalLayout = findViewById(R.id.verticalLayout)
+        wordInput = findViewById(R.id.wordInput)
+        wordBtn = findViewById(R.id.wordBtn)
+        wordBtn.setOnClickListener {
+            val text = wordInput.text.toString()
+            if(text != null) {
+                print("myLog: text $text")
+                openWord(text)
+            }
+        }
     }
 
     private fun updateMatrix() {
@@ -93,7 +105,7 @@ class LevelActivity : AppCompatActivity() {
         }
     }
 
-    private fun openWord(text: String) {
+    private fun openWord(text: String?) {
         if(viewModel.levelData == null) return
         val level = viewModel.levelData!!
 
