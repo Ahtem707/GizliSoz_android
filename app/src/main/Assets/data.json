@@ -3,7 +3,7 @@
     "level": 1,
     "name": "Meraba",
     "size": 6,
-    "chars": [],
+    "chars": ["a","a","b","ş","m","e","e","r","n","f","s","l"],
     "words": {
       "meraba": {
         "chars": ["m","e","r","a","b","a"],

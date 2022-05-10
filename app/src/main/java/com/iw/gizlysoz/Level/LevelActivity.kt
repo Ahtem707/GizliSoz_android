@@ -6,19 +6,23 @@ import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.text.Editable
+import android.util.AttributeSet
 import android.util.Log
 import android.view.Gravity
 import android.view.View
+import android.view.ViewGroup
 import android.widget.Button
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.children
 import androidx.core.view.isVisible
+import androidx.core.view.updateLayoutParams
 import com.google.android.material.textfield.TextInputEditText
-import com.iw.gizlysoz.Level.LevelViewModel
-import com.iw.gizlysoz.Level.Words
+import com.iw.gizlysoz.Extension.DrawView
+import com.iw.gizlysoz.Level.*
 
 
 data class LevelActivityInput(val level: Int)
@@ -29,12 +33,16 @@ class LevelActivity : AppCompatActivity() {
     private lateinit var verticalLayout: LinearLayout
     private lateinit var wordInput: TextInputEditText
     private lateinit var wordBtn: Button
+    lateinit var customKeyboard: FrameLayout
 
     private val cellSize = 150
     private val cellMargin = 20
     private lateinit var matrix: Array<Array<FrameLayout?>>
+    var keyboardBtnPoints: ArrayList<Point> = ArrayList();
+    var keyboardSelectBtnPoint: ArrayList<Point> = ArrayList();
+    var drawView: ArrayList<DrawView> = ArrayList();
 
-    private val viewModel = LevelViewModel()
+    val viewModel = LevelViewModel()
 
     @SuppressLint("ResourceAsColor")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -53,14 +61,9 @@ class LevelActivity : AppCompatActivity() {
         actionBar?.setDisplayHomeAsUpEnabled(true)
         actionBar?.show()
 
-        // Создать пустую матрицу
-        createMatrix(0)
+        setupMatrix(level)
 
-        // Получить данные по текущему уровню
-        viewModel.jsonFetch(this, level)
-
-        // Обновить матрицу
-        updateMatrix()
+        setupRoundKeyboard()
     }
 
     override fun onWindowFocusChanged(hasFocus: Boolean) {
@@ -80,6 +83,18 @@ class LevelActivity : AppCompatActivity() {
                 openWord(text)
             }
         }
+        customKeyboard = findViewById(R.id.customKeyboard)
+    }
+
+    private fun setupMatrix(level: Int) {
+        // Создать пустую матрицу
+        createMatrix(0)
+
+        // Получить данные по текущему уровню
+        viewModel.jsonFetch(this, level)
+
+        // Обновить матрицу
+        updateMatrix()
     }
 
     private fun updateMatrix() {
@@ -112,7 +127,7 @@ class LevelActivity : AppCompatActivity() {
         }
     }
 
-    private fun openWord(text: String?) {
+    fun openWord(text: String?) {
         if(viewModel.levelData == null) return
         val level = viewModel.levelData!!
 
@@ -122,6 +137,12 @@ class LevelActivity : AppCompatActivity() {
                     val cell = matrix[it.value.x[i]][it.value.y[i]]
                     val content = (cell?.children?.first() as FrameLayout)
                     val label = (content.children.first() as TextView)
+                    content.background = roundedCornersDrawable(
+                        2.dpToPixels(applicationContext), // border width in pixels
+                        R.color.cellBorderColor.toColor(this), // border color
+                        10.dpToPixels(applicationContext).toFloat(), // corners radius
+                        R.color.cellFillColor.toColor(this)
+                    )
                     label.text = it.value.chars[i]
                 }
             }
@@ -150,7 +171,7 @@ class LevelActivity : AppCompatActivity() {
             val horizontalLayout = LinearLayout(this)
             horizontalLayout.orientation = LinearLayout.HORIZONTAL
             for(y in 0 until size) {
-                val cell = makeCell("")
+                val cell = makeMatrixCell("")
                 this.matrix[y][x] = cell
                 horizontalLayout.addView(cell)
             }
@@ -159,7 +180,7 @@ class LevelActivity : AppCompatActivity() {
     }
 
     @OptIn(ExperimentalStdlibApi::class)
-    private fun makeCell(text: String): FrameLayout {
+    private fun makeMatrixCell(text: String): FrameLayout {
         val container = FrameLayout(this)
         val content = FrameLayout(this)
         val label = TextView(this)
@@ -174,9 +195,9 @@ class LevelActivity : AppCompatActivity() {
 
         content.background = roundedCornersDrawable(
             2.dpToPixels(applicationContext), // border width in pixels
-            R.color.cellBackground.toColor(this), // border color
+            R.color.cellEmptyColor.toColor(this), // border color
             10.dpToPixels(applicationContext).toFloat(), // corners radius
-            R.color.cellBackground.toColor(this)
+            R.color.cellEmptyColor.toColor(this)
         )
 
         label.text = text
@@ -185,21 +206,6 @@ class LevelActivity : AppCompatActivity() {
         content.addView(label)
         container.addView(content)
         return container
-    }
-
-    private fun roundedCornersDrawable(
-        borderWidth: Int = 10, // border width in pixels
-        borderColor: Int = Color.BLACK, // border color
-        cornerRadius: Float = 25F, // corner radius in pixels
-        bgColor: Int = Color.TRANSPARENT // view background color
-    ): Drawable {
-        return GradientDrawable().apply {
-            shape = GradientDrawable.RECTANGLE
-            setStroke(borderWidth, borderColor)
-            setColor(bgColor)
-            // make it rounded corners
-            this.cornerRadius = cornerRadius
-        }
     }
 
 }
