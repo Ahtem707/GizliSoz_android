@@ -128,24 +128,6 @@ class RoundKeyboard: RelativeLayout {
             val data = CharCellData(index, cell, char, point)
             charBtnPoints.add(data)
         }
-
-//        pointsCircle.forEachIndexed { index, item ->
-//            val point = Point(
-//                layout.keyboardCenter.x + item.x,
-//                layout.keyboardCenter.y + item.y
-//            )
-//            val data = CharCellData(index, "", point)
-//            charBtnPoints.add(data)
-//        }
-//
-//        chars.forEachIndexed { i, char ->
-//            charBtnPoints[i].char = char;
-//            val cell = CharCell(context, char, layout, appearance);
-//            val data = charBtnPoints[i];
-//            charsLayer.addView(cell);
-//            cell.x = data.point.x - cell.layoutParams.width/2;
-//            cell.y = data.point.y - cell.layoutParams.height/2;
-//        }
     }
 
     private fun getPointsCircle(n: Int, radius: Float, offsetAngel: Float): ArrayList<Point> {

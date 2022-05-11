@@ -11,10 +11,8 @@ import android.util.Log
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.FrameLayout
-import android.widget.LinearLayout
-import android.widget.TextView
+import android.widget.*
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.children
@@ -128,8 +126,10 @@ class LevelActivity : AppCompatActivity() {
     }
 
     fun openWord(text: String?) {
-        if(viewModel.levelData == null) return
+        if(viewModel.levelData == null) return;
         val level = viewModel.levelData!!
+        if(text == null) return;
+        val text = text;
 
         level.words.forEach {
             if(it.key == text) {
@@ -145,8 +145,26 @@ class LevelActivity : AppCompatActivity() {
                     )
                     label.text = it.value.chars[i]
                 }
+                viewModel.levelOpenWords.add(text);
+                if(viewModel.levelOpenWords.size == level.words.size) {
+                    alertWin();
+                }
             }
         }
+    }
+
+    private fun alertWin() {
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle(R.string.wellDone)
+        builder.setMessage(R.string.youWin)
+
+        builder.setPositiveButton(R.string.well) { dialog, which ->
+            // TODO this is action function
+//            Toast.makeText(applicationContext,
+//                "Yahşı", Toast.LENGTH_SHORT).show()
+        }
+
+        builder.show()
     }
 
     private fun checkWordLength(words: Words): Boolean {

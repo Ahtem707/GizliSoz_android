@@ -24,7 +24,8 @@ data class Level(
 
 class LevelViewModel {
 
-    var levelData: Level? = null
+    var levelData: Level? = null;
+    var levelOpenWords: ArrayList<String> = ArrayList();
 
     private fun getJsonDataFromAsset(context: Context, fileName: String): String? {
         val jsonString: String

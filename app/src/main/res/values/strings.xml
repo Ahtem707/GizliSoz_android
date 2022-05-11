@@ -1,7 +1,10 @@
 <resources>
     <string name="app_name">GizlySöz</string>
-    <string name="level">Level</string>
-    <string name="start">Start</string>
+    <string name="level">Seviye</string>
+    <string name="start">Başlamaq</string>
+    <string name="wellDone">Maşşalla</string>
+    <string name="youWin">Sen yuttin</string>
+    <string name="well">Yahşı</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
