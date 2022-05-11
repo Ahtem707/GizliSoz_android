@@ -11,6 +11,7 @@ import com.google.android.material.navigation.NavigationView;
 
 class MainActivity : AppCompatActivity() {
 
+    private var maxLevel: Int = 2;
     private var levelSelected: Int = 1;
     private var view: View? = null
     var navigationView: NavigationView? = null
@@ -47,7 +48,11 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun openLevelSelect() {
-        levelSelected++;
+        if(levelSelected < maxLevel) {
+            levelSelected++;
+        } else {
+            levelSelected = 1;
+        }
         val levelBtn = findViewById<Button>(R.id.levelBtn)
         levelBtn.text = "$levelSelected\n" + getString(R.string.level)
     }

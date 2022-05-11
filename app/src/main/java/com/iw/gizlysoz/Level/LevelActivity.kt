@@ -130,6 +130,10 @@ class LevelActivity : AppCompatActivity() {
         if(text == null) return;
         val text = text;
 
+        // Проверка нет ли слова среди открытых
+        if(viewModel.levelOpenWords.contains(text)) return;
+
+        // Открыть слово если оно есть
         level.words.forEach {
             if(it.key == text) {
                 for(i in it.value.chars.indices) {
