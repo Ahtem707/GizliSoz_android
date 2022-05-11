@@ -139,7 +139,7 @@ class LevelActivity : AppCompatActivity() {
                     val label = (content.children.first() as TextView)
                     content.background = roundedCornersDrawable(
                         2.dpToPixels(applicationContext), // border width in pixels
-                        R.color.cellBorderColor.toColor(this), // border color
+                        R.color.cellFillColor.toColor(this), // border color
                         10.dpToPixels(applicationContext).toFloat(), // corners radius
                         R.color.cellFillColor.toColor(this)
                     )

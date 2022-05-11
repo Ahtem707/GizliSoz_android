@@ -32,7 +32,6 @@ fun LevelActivity.setupRoundKeyboard() {
 
     // Получить данные
     val chars = this.viewModel.levelData?.chars ?: return;
-    // val chars = arrayOf("a","b","c","d","e","f","g")
 
     // Перемешать массив символов
     chars.shuffle();
@@ -46,7 +45,7 @@ fun LevelActivity.setupRoundKeyboard() {
 }
 
 data class Point(val x: Float, val y: Float) {}
-data class CharCellData(val id: Int, var char: String, val point: Point)
+data class CharCellData(val id: Int, val cell: CharCell?, val char: String, val point: Point)
 
 class RoundKeyboardConstants {
     class Layout(context: Context) {
@@ -57,8 +56,8 @@ class RoundKeyboardConstants {
     }
 
     class Appearance(context: Context) {
-        val charCellBgEmpty = ContextCompat.getColor(context, R.color.cellEmptyColor);
-        val charCellBgFill = ContextCompat.getColor(context, R.color.cellFillColor);
+        val charCellBgEmpty = ContextCompat.getColor(context, R.color.charCellEmptyColor);
+        val charCellBgFill = ContextCompat.getColor(context, R.color.charCellFillColor);
         val textSize = 26f;
         val textColor = ContextCompat.getColor(context, R.color.black);
         val lineColor = ContextCompat.getColor(context, R.color.lineColor);
@@ -121,18 +120,32 @@ class RoundKeyboard: RelativeLayout {
                 layout.keyboardCenter.x + item.x,
                 layout.keyboardCenter.y + item.y
             )
-            val data = CharCellData(index, "", point)
+            val char = chars[index];
+            val cell = CharCell(context, char, layout, appearance);
+            charsLayer.addView(cell);
+            cell.x = point.x - cell.layoutParams.width/2;
+            cell.y = point.y - cell.layoutParams.height/2;
+            val data = CharCellData(index, cell, char, point)
             charBtnPoints.add(data)
         }
 
-        chars.forEachIndexed { i, char ->
-            charBtnPoints[i].char = char;
-            val cell = CharCell(context, char, layout, appearance);
-            val data = charBtnPoints[i];
-            charsLayer.addView(cell);
-            cell.x = data.point.x - cell.layoutParams.width/2;
-            cell.y = data.point.y - cell.layoutParams.height/2;
-        }
+//        pointsCircle.forEachIndexed { index, item ->
+//            val point = Point(
+//                layout.keyboardCenter.x + item.x,
+//                layout.keyboardCenter.y + item.y
+//            )
+//            val data = CharCellData(index, "", point)
+//            charBtnPoints.add(data)
+//        }
+//
+//        chars.forEachIndexed { i, char ->
+//            charBtnPoints[i].char = char;
+//            val cell = CharCell(context, char, layout, appearance);
+//            val data = charBtnPoints[i];
+//            charsLayer.addView(cell);
+//            cell.x = data.point.x - cell.layoutParams.width/2;
+//            cell.y = data.point.y - cell.layoutParams.height/2;
+//        }
     }
 
     private fun getPointsCircle(n: Int, radius: Float, offsetAngel: Float): ArrayList<Point> {
@@ -158,6 +171,7 @@ class RoundKeyboard: RelativeLayout {
                 MotionEvent.ACTION_DOWN -> {
                     charBtnPoints.forEach { data ->
                         if((nowPoint.x - data.point.x).pow(2) + (nowPoint.y - data.point.y).pow(2) <= cellRadius.pow(2)) {
+                            data.cell?.setState(true);
                             charBtnPointsSelected.add(data);
                         }
                     }
@@ -167,20 +181,28 @@ class RoundKeyboard: RelativeLayout {
                         if((nowPoint.x - data.point.x).pow(2) + (nowPoint.y - data.point.y).pow(2) <= cellRadius.pow(2)) {
                             val checkCollision = charBtnPointsSelected.filter { it.id == data.id }
                             if (checkCollision.isEmpty()) {
+                                data.cell?.setState(true);
                                 charBtnPointsSelected.add(data);
                             }
                         }
                         charBtnPointsSelected.removeAll { it.id == -1 }
-                        val tmpLine = CharCellData(-1,"",nowPoint)
+                        val tmpLine = CharCellData(-1,null, "", nowPoint)
                         charBtnPointsSelected.add(tmpLine);
                         updateLines();
                     }
                 }
                 MotionEvent.ACTION_UP -> {
+                    charBtnPointsSelected.forEach { data ->
+                        data.cell?.setState(false);
+                    }
                     charBtnPointsSelected.removeAll { it.id == -1 }
-                    val word = charBtnPointsSelected.map { it.char }.reduce { x, y -> x + y }
-                    sendWord!!(word);
-                    charBtnPointsSelected.clear();
+                    if(charBtnPointsSelected.size > 1) {
+                        val word = charBtnPointsSelected.map { it.char }.reduce { x, y -> x + y }
+                        if(!word.isEmpty()){
+                            sendWord?.let { it(word) };
+                        }
+                        charBtnPointsSelected.clear();
+                    }
                     updateLines();
                 }
             }

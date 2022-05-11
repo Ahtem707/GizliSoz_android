@@ -31,6 +31,7 @@ class CharCell: FrameLayout {
         setupContent();
     }
 
+    // MARK - Private
     private fun setupLayout() {
         this.layoutParams = ViewGroup.LayoutParams(
             layout.cellSize.toInt(),
@@ -63,5 +64,14 @@ class CharCell: FrameLayout {
             this.cornerRadius = cornerRadius
         }
         this.background = gradient
+    }
+
+    fun setState(isSelect: Boolean) {
+        if(isSelect) {
+            this.setCellBackground(appearance.charCellBgFill);
+        } else {
+            this.setCellBackground(appearance.charCellBgEmpty);
+        }
+
     }
 }
