@@ -99,7 +99,7 @@ class LevelActivity : AppCompatActivity() {
         if(viewModel.levelData == null) return
         val level = viewModel.levelData!!
         // Проверка размера ячейки с длиной слова
-        if(level.words.values.map { it.chars.count() }.maxOrNull() != level.size) return
+        if(level.words.values.maxOf { it.chars.count() } > level.size) return
         // Проверка длины слова с количеством координат
         if(!checkWordLength(level.words)) return
 

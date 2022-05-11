@@ -11,7 +11,7 @@ import com.google.android.material.navigation.NavigationView;
 
 class MainActivity : AppCompatActivity() {
 
-    private var levelSelected: Int = 1
+    private var levelSelected: Int = 1;
     private var view: View? = null
     var navigationView: NavigationView? = null
 
@@ -48,7 +48,7 @@ class MainActivity : AppCompatActivity() {
             this,
             LevelActivity::class.java
         );
-        intent.putExtra("level", 1)
+        intent.putExtra("level", levelSelected)
         startActivity(intent);
     }
 }
