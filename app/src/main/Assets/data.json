@@ -3,7 +3,7 @@
     "level": 1,
     "name": "Meraba",
     "size": 6,
-    "chars": ["a","a","b","ş","m","e","e","r","n","f","s","l"],
+    "chars": ["a","a","b","ş","m","e","r","n","l"],
     "words": {
       "meraba": {
         "chars": ["m","e","r","a","b","a"],
@@ -16,12 +16,6 @@
         "x": [2,3,4],
         "y": [0,0,0],
         "description": "Баш"
-      },
-      "nefes": {
-        "chars": ["n","e","f","e","s"],
-        "x": [0,1,2,3,4],
-        "y": [5,5,5,5,5],
-        "description": "Нефес"
       },
       "alma": {
         "chars": ["a","l","m","a"],
