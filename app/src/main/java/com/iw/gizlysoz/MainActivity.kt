@@ -23,10 +23,13 @@ class MainActivity : AppCompatActivity() {
 
         val levelBtn = findViewById<Button>(R.id.levelBtn)
         levelBtn.text = "$levelSelected\n" + getString(R.string.level)
+        levelBtn.setOnClickListener {
+            openLevelSelect();
+        }
 
         val startBtn = findViewById<Button>(R.id.startBtn)
         startBtn.setOnClickListener {
-            openActivity()
+            openActivity();
         }
 
         startBtn.setBackgroundColor(R.color.green.toColor(this))
@@ -41,6 +44,12 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupSubview() {
         view = findViewById(R.id.MainView)
+    }
+
+    private fun openLevelSelect() {
+        levelSelected++;
+        val levelBtn = findViewById<Button>(R.id.levelBtn)
+        levelBtn.text = "$levelSelected\n" + getString(R.string.level)
     }
 
     private fun openActivity() {

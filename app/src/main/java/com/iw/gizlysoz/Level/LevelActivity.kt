@@ -77,7 +77,6 @@ class LevelActivity : AppCompatActivity() {
         wordBtn.setOnClickListener {
             val text = wordInput.text.toString()
             if(text != null) {
-                print("myLog: text $text")
                 openWord(text)
             }
         }
@@ -159,9 +158,7 @@ class LevelActivity : AppCompatActivity() {
         builder.setMessage(R.string.youWin)
 
         builder.setPositiveButton(R.string.well) { dialog, which ->
-            // TODO this is action function
-//            Toast.makeText(applicationContext,
-//                "Yahşı", Toast.LENGTH_SHORT).show()
+            this.finish()
         }
 
         builder.show()
@@ -225,5 +222,4 @@ class LevelActivity : AppCompatActivity() {
         container.addView(content)
         return container
     }
-
 }
