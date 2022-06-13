@@ -20,7 +20,6 @@ import kotlin.math.sin
 fun LevelActivity.setupRoundKeyboard() {
 
     // Обновить размер блока клавиатуры
-    // ?? Вариативно можно будет убрать
     val layout = RoundKeyboardConstants.Layout(this)
     customKeyboard.updateLayoutParams<ConstraintLayout.LayoutParams> {
         width = layout.keyboardSize.toInt()
@@ -33,11 +32,12 @@ fun LevelActivity.setupRoundKeyboard() {
     // Перемешать массив символов
     chars.shuffle()
 
-    // Добавит клавиатуру
+    // Добавить клавиатуру
     val roundKeyboard = RoundKeyboard(this, chars)
     customKeyboard.addView(roundKeyboard)
     roundKeyboard.sendWord = { word ->
-        openWord(word)
+        val func = openWordCompletion
+        if(func != null) func(word)
     }
 }
 
@@ -45,24 +45,27 @@ data class Point(val x: Float, val y: Float)
 data class CharCellData(val id: Int, val cell: CharCell?, val char: String, val point: Point)
 
 class RoundKeyboardConstants {
-    class Layout(context: Context) {
+    class Layout(context: Context): CharCell.Layout {
         val keyboardSize = 1000f
         val keyboardCenter = Point(keyboardSize/2, keyboardSize/2)
-        val cellSize = 200f
+        override val cellSize = 200f
         val keyboardRound = keyboardSize/2 - cellSize/2
     }
 
-    class Appearance(context: Context) {
-        val charCellBgEmpty = ContextCompat.getColor(context, R.color.charCellEmptyColor)
-        val charCellBgFill = ContextCompat.getColor(context, R.color.charCellFillColor)
-        val textSize = 26f
-        val textColor = ContextCompat.getColor(context, R.color.black)
+    class Appearance(context: Context): CharCell.Appearance {
+        override val charCellBgHidden: Int = ContextCompat.getColor(context, R.color.hidden)
+        override val charCellBgEmpty = ContextCompat.getColor(context, R.color.charCellEmpty)
+        override val charCellBgFill = ContextCompat.getColor(context, R.color.charCellFill)
+        override val charCellBgSelected = ContextCompat.getColor(context, R.color.charCellSelected)
+        override val charCellTextSize = 26f
+        override val charCellTextColor = ContextCompat.getColor(context, R.color.black)
+        override val charCellCornerRadius = Float.MAX_VALUE
         val lineColor = ContextCompat.getColor(context, R.color.lineColor)
     }
 }
 
 @SuppressLint("ViewConstructor")
-class RoundKeyboard(context: Context, private val chars: Array<String>) : RelativeLayout(context) {
+class RoundKeyboard(context: Context, private val chars: Array<String>): RelativeLayout(context) {
 
     private val layout = RoundKeyboardConstants.Layout(context)
     private val appearance = RoundKeyboardConstants.Appearance(context)
@@ -148,15 +151,7 @@ class RoundKeyboard(context: Context, private val chars: Array<String>) : Relati
                 MotionEvent.ACTION_DOWN -> {
                     charBtnPoints.forEach { data ->
                         if((nowPoint.x - data.point.x).pow(2) + (nowPoint.y - data.point.y).pow(2) <= cellRadius.pow(2)) {
-                            data.cell?.setState(true)
-                            charBtnPointsSelected.add(data)
-                        }
-                    }
-                }
-                MotionEvent.ACTION_DOWN -> {
-                    charBtnPoints.forEach { data ->
-                        if((nowPoint.x - data.point.x).pow(2) + (nowPoint.y - data.point.y).pow(2) <= cellRadius.pow(2)) {
-                            data.cell?.setState(true)
+                            data.cell?.setState(CharCell.CellState.select)
                             charBtnPointsSelected.add(data)
                         }
                     }
@@ -166,7 +161,7 @@ class RoundKeyboard(context: Context, private val chars: Array<String>) : Relati
                         if((nowPoint.x - data.point.x).pow(2) + (nowPoint.y - data.point.y).pow(2) <= cellRadius.pow(2)) {
                             val checkCollision = charBtnPointsSelected.filter { it.id == data.id }
                             if (checkCollision.isEmpty()) {
-                                data.cell?.setState(true)
+                                data.cell?.setState(CharCell.CellState.select)
                                 charBtnPointsSelected.add(data)
                             }
                         }
@@ -178,7 +173,7 @@ class RoundKeyboard(context: Context, private val chars: Array<String>) : Relati
                 }
                 MotionEvent.ACTION_UP -> {
                     charBtnPointsSelected.forEach { data ->
-                        data.cell?.setState(false)
+                        data.cell?.setState(CharCell.CellState.fill)
                     }
                     charBtnPointsSelected.removeAll { it.id == -1 }
                     if(charBtnPointsSelected.size > 1) {

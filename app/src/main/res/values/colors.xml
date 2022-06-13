@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="cellEmptyColor">#CCFFFFFF</color>
-    <color name="cellFillColor">#CC2196F3</color>
-    <color name="charCellEmptyColor">#FFFFFF</color>
-    <color name="charCellFillColor">#2196F3</color>
+    <color name="charCellEmpty">#FFFFFF</color>
+    <color name="charCellFill">#FFFFFF</color>
+    <color name="charCellSelected">#2196F3</color>
     <color name="lineColor">#673AB7</color>
     <color name="hidden">#00000000</color>
     <color name="backcolor">#FF5AC8F0</color>
