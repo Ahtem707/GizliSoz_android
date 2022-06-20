@@ -2,10 +2,13 @@ package com.iw.gizlysoz.Level
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.drawable.GradientDrawable
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.FrameLayout
+import android.widget.ImageView
 import android.widget.RelativeLayout
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
@@ -17,23 +20,22 @@ import kotlin.math.cos
 import kotlin.math.pow
 import kotlin.math.sin
 
+
 fun LevelActivity.setupRoundKeyboard() {
 
     // Обновить размер блока клавиатуры
     val layout = RoundKeyboardConstants.Layout(this)
     customKeyboard.updateLayoutParams<ConstraintLayout.LayoutParams> {
-        width = layout.keyboardSize.toInt()
-        height = layout.keyboardSize.toInt()
+        width = layout.keyboardSize.width
+        height = layout.keyboardSize.height
     }
 
     // Получить данные
     val chars = this.viewModel.levelData?.chars ?: return
 
-    // Перемешать массив символов
-    chars.shuffle()
-
     // Добавить клавиатуру
-    val roundKeyboard = RoundKeyboard(this, chars)
+    val input = RoundKeyboard.Input(chars)
+    val roundKeyboard = RoundKeyboard(this, input)
     customKeyboard.addView(roundKeyboard)
     roundKeyboard.sendWord = { word ->
         val func = openWordCompletion
@@ -41,17 +43,33 @@ fun LevelActivity.setupRoundKeyboard() {
     }
 }
 
-data class Point(val x: Float, val y: Float)
-data class CharCellData(val id: Int, val cell: CharCell?, val char: String, val point: Point)
+class Point {
+    val x: Float
+    val y: Float
+
+    constructor(x: Float, y: Float) {
+        this.x = x
+        this.y = y
+    }
+    constructor(x: Int, y: Int) {
+        this.x = x.toFloat()
+        this.y = y.toFloat()
+    }
+}
+data class CharCellData(val id: Int, val cell: CharCell?, val char: String, var point: Point)
 
 class RoundKeyboardConstants {
     class Layout(context: Context): CharCell.Layout {
-        val keyboardSize = 1000f
-        val keyboardCenter = Point(keyboardSize/2, keyboardSize/2)
+        val wrap = ConstraintLayout.LayoutParams.WRAP_CONTENT
+        val parent = ConstraintLayout.LayoutParams.MATCH_PARENT
+        val keyboardSize = FrameLayout.LayoutParams(1000,1000)
+        val keyboardCenter = Point(keyboardSize.width/2, keyboardSize.height/2)
         override val cellSize = 200f
-        val keyboardRound = keyboardSize/2 - cellSize/2
+        val keyboardRound = keyboardSize.width/2 - cellSize/2
+        val shuffleSize = FrameLayout.LayoutParams(200,200)
     }
 
+    @SuppressLint("UseCompatLoadingForDrawables")
     class Appearance(context: Context): CharCell.Appearance {
         override val charCellBgHidden: Int = ContextCompat.getColor(context, R.color.hidden)
         override val charCellBgEmpty = ContextCompat.getColor(context, R.color.charCellEmpty)
@@ -61,48 +79,59 @@ class RoundKeyboardConstants {
         override val charCellTextColor = ContextCompat.getColor(context, R.color.black)
         override val charCellCornerRadius = Float.MAX_VALUE
         val lineColor = ContextCompat.getColor(context, R.color.lineColor)
+        val shuffleIcon = context.getDrawable(R.drawable.shuffle_icon)
+        val shuffleBg = ContextCompat.getColor(context, R.color.teal_200)
     }
 }
 
-@SuppressLint("ViewConstructor")
-class RoundKeyboard(context: Context, private val chars: Array<String>): RelativeLayout(context) {
+class RoundKeyboard(context: Context, private val input: Input): RelativeLayout(context) {
+
+    // Mark - Wrapper objects
+    data class Input(
+        var chars: Array<String>
+    )
 
     private val layout = RoundKeyboardConstants.Layout(context)
     private val appearance = RoundKeyboardConstants.Appearance(context)
     private val lineLayer = FrameLayout(context)
     private val charsLayer = FrameLayout(context)
     private val touchView = View(context)
-    private var charBtnPoints = ArrayList<CharCellData>()
-    private var charBtnPointsSelected = ArrayList<CharCellData>()
+    private var charBtnPoints: ArrayList<CharCellData> = ArrayList()
+    private var charBtnPointsSelected: ArrayList<CharCellData> = ArrayList()
 
     var sendWord: ((word: String) -> Unit)? = null
 
     init {
+        setupSubview()
         setupLayout()
-        setupChars()
         setupKeyboardTouch()
+    }
+
+    private fun setupSubview() {
+        setupShuffleButton()
+        setupChars()
     }
 
     private fun setupLayout() {
 
         this.layoutParams = ViewGroup.LayoutParams(
-            ViewGroup.LayoutParams.MATCH_PARENT,
-            ViewGroup.LayoutParams.MATCH_PARENT
+            layout.parent,
+            layout.parent
         )
 
         this.lineLayer.layoutParams = ViewGroup.LayoutParams(
-            ViewGroup.LayoutParams.MATCH_PARENT,
-            ViewGroup.LayoutParams.MATCH_PARENT
+            layout.parent,
+            layout.parent
         )
 
         this.charsLayer.layoutParams = ViewGroup.LayoutParams(
-            ViewGroup.LayoutParams.MATCH_PARENT,
-            ViewGroup.LayoutParams.MATCH_PARENT
+            layout.parent,
+            layout.parent
         )
 
         this.touchView.layoutParams = ViewGroup.LayoutParams(
-            ViewGroup.LayoutParams.MATCH_PARENT,
-            ViewGroup.LayoutParams.MATCH_PARENT
+            layout.parent,
+            layout.parent
         )
 
         this.addView(lineLayer)
@@ -110,21 +139,64 @@ class RoundKeyboard(context: Context, private val chars: Array<String>): Relativ
         this.addView(touchView)
     }
 
+    @SuppressLint("UseCompatLoadingForDrawables", "ClickableViewAccessibility")
+    private fun setupShuffleButton() {
+        val layoutParams = layout.shuffleSize
+        val leftOffset = (layout.keyboardSize.width - layout.shuffleSize.width) / 2
+        val topOffset = (layout.keyboardSize.height - layout.shuffleSize.height) / 2
+        layoutParams.leftMargin = leftOffset
+        layoutParams.topMargin = topOffset
+
+        val icon = ImageView(context)
+        icon.setImageDrawable(appearance.shuffleIcon)
+        icon.layoutParams = layoutParams
+        val back = GradientDrawable().apply {
+            this.cornerRadius = layout.shuffleSize.width.toFloat()
+            this.setColor(appearance.shuffleBg)
+        }
+        icon.background = back
+
+        val btn = Button(context)
+        btn.layoutParams = layoutParams
+        btn.background = null
+
+        btn.setOnClickListener {
+            this.shuffle()
+        }
+
+        this.addView(icon)
+        this.addView(btn)
+    }
+
     private fun setupChars() {
-        val pointsCircle = getPointsCircle(chars.count(), layout.keyboardRound, 0f)
+        val pointsCircle = getPointsCircle(input.chars.count(), layout.keyboardRound, 0f)
 
         pointsCircle.forEachIndexed { index, item ->
             val point = Point(
                 layout.keyboardCenter.x + item.x,
                 layout.keyboardCenter.y + item.y
             )
-            val char = chars[index]
+            val char = input.chars[index]
             val cell = CharCell(context, char, layout, appearance)
             charsLayer.addView(cell)
             cell.x = point.x - cell.layoutParams.width/2
             cell.y = point.y - cell.layoutParams.height/2
             val data = CharCellData(index, cell, char, point)
             charBtnPoints.add(data)
+        }
+    }
+
+    private fun shuffle() {
+        val points = charBtnPoints.map { it.point } as? ArrayList<Point> ?: return
+        points.shuffle()
+        for(i in 0 until charBtnPoints.count()) {
+            charBtnPoints[i].point = points[i]
+        }
+        charBtnPoints.forEach {
+            it.cell?.animate()
+                ?.x(it.point.x - it.cell.layoutParams.width/2)
+                ?.y(it.point.y - it.cell.layoutParams.height/2)
+                ?.duration = 1000
         }
     }
 
@@ -138,6 +210,8 @@ class RoundKeyboard(context: Context, private val chars: Array<String>): Relativ
             val y = (radius * sin(angelRadian)).toFloat()
             pointList.add(Point(x,y))
         }
+        // Перемешать позиции
+        pointList.shuffle()
         return pointList
     }
 
