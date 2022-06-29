@@ -9,6 +9,8 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.children
 import androidx.core.view.updateLayoutParams
 import com.iw.gizlysoz.LevelActivity
+import com.iw.gizlysoz.ProjectManagers.MainManager
+import com.iw.gizlysoz.ProjectManagers.Words
 import com.iw.gizlysoz.R
 
 interface CrossViewOutput {
@@ -21,7 +23,7 @@ fun LevelActivity.setupCrossView() {
         width = layout.crossView.toInt()
         height = layout.crossView.toInt()
     }
-    val input = CrossView.Input(this, viewModel)
+    val input = CrossView.Input(this)
     val crossView = CrossView(this, input)
     this.crossView.addView(crossView)
     this.openWordCompletion = { word ->
@@ -33,8 +35,7 @@ class CrossView(context: Context, private val input: Input): RelativeLayout(cont
 
     // Mark - Wrapper objects
     data class Input(
-        val delegate: CrossViewOutput,
-        val viewModel: LevelViewModel
+        val delegate: CrossViewOutput
     )
 
     class Layout(context: Context): CharCell.Layout {
@@ -59,6 +60,8 @@ class CrossView(context: Context, private val input: Input): RelativeLayout(cont
     private val layout = Layout(context)
     private val appearance = Appearance(context)
     private lateinit var matrix: Array<Array<CharCell?>>
+    private val level: MainManager.Level = MainManager.share.getLevel()
+    private var levelOpenWords: ArrayList<String> = ArrayList()
 
     // Mark: - Init
     init {
@@ -70,7 +73,7 @@ class CrossView(context: Context, private val input: Input): RelativeLayout(cont
     private fun setupSubview() {
         this.gravity = Gravity.CENTER_HORIZONTAL
 
-        val size = input.viewModel.levelData?.size ?: return
+        val size = level.size ?: return
 
         // Создать пустую матрицу
         createMatrix(size)
@@ -114,7 +117,6 @@ class CrossView(context: Context, private val input: Input): RelativeLayout(cont
     }
 
     private fun updateMatrix() {
-        val level = input.viewModel.levelData ?: return
         // Проверка размера ячейки с длиной слова
         if(level.words.values.maxOf { it.chars.count() } > level.size) return
         // Проверка длины слова с количеством координат
@@ -139,11 +141,10 @@ class CrossView(context: Context, private val input: Input): RelativeLayout(cont
     }
 
     fun openWord(text: String?) {
-        val level = input.viewModel.levelData ?: return
         val text = text ?: return
 
         // Проверка нет ли слова среди открытых
-        if(input.viewModel.levelOpenWords.contains(text)) return
+        if(levelOpenWords.contains(text)) return
 
         // Открыть слово если оно есть
         level.words.forEach {
@@ -153,8 +154,8 @@ class CrossView(context: Context, private val input: Input): RelativeLayout(cont
                     cell.setText(it.value.chars[i])
                     cell.setState(CharCell.CellState.fill)
                 }
-                input.viewModel.levelOpenWords.add(text)
-                if(input.viewModel.levelOpenWords.size == level.words.size) {
+                levelOpenWords.add(text)
+                if(levelOpenWords.size == level.words.size) {
                     input.delegate.complete()
                 }
             }
@@ -163,7 +164,7 @@ class CrossView(context: Context, private val input: Input): RelativeLayout(cont
 
     private fun checkWordLength(words: Words): Boolean {
         for(key in words.keys) {
-            val word = input.viewModel.levelData?.words?.get(key)
+            val word = level.words[key]
             val length = word?.chars?.count()
             if(length == word?.x?.count() && length == word?.y?.count()) {
                 return true

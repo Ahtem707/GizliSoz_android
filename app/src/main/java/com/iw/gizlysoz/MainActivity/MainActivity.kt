@@ -1,4 +1,4 @@
-package com.iw.gizlysoz
+package com.iw.gizlysoz.MainActivity
 
 import android.content.Intent
 import android.os.Build
@@ -7,14 +7,13 @@ import android.view.View
 import android.widget.Button
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-import com.google.android.material.navigation.NavigationView;
+import com.iw.gizlysoz.*
+import com.iw.gizlysoz.ProjectManagers.MainManager
 
 class MainActivity : AppCompatActivity() {
 
     private var maxLevel: Int = 2;
-    private var levelSelected: Int = 1;
     private var view: View? = null
-    var navigationView: NavigationView? = null
 
     @RequiresApi(Build.VERSION_CODES.R)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -23,7 +22,6 @@ class MainActivity : AppCompatActivity() {
         setupSubview()
 
         val levelBtn = findViewById<Button>(R.id.levelBtn)
-        levelBtn.text = "$levelSelected\n" + getString(R.string.level)
         levelBtn.setOnClickListener {
             openLevelSelect();
         }
@@ -34,6 +32,10 @@ class MainActivity : AppCompatActivity() {
         }
 
         startBtn.setBackgroundColor(R.color.green.toColor(this))
+
+        // Создаем менеджер
+        MainManager.share = MainManager(this)
+        MainManager.share.loadLevels()
     }
 
     override fun onWindowFocusChanged(hasFocus: Boolean) {
@@ -48,21 +50,19 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun openLevelSelect() {
-        if(levelSelected < maxLevel) {
-            levelSelected++;
-        } else {
-            levelSelected = 1;
-        }
-        val levelBtn = findViewById<Button>(R.id.levelBtn)
-        levelBtn.text = "$levelSelected\n" + getString(R.string.level)
+
+        val intent = Intent(
+            this,
+            LevelsScreen::class.java
+        )
+        startActivity(intent)
     }
 
     private fun openActivity() {
         val intent = Intent(
             this,
             LevelActivity::class.java
-        );
-        intent.putExtra("level", levelSelected)
-        startActivity(intent);
+        )
+        startActivity(intent)
     }
 }

@@ -13,7 +13,10 @@
             android:name=".LevelActivity"
             android:exported="false" />
         <activity
-            android:name=".MainActivity"
+            android:name=".LevelsScreen"
+            android:exported="false" />
+        <activity
+            android:name=".MainActivity.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

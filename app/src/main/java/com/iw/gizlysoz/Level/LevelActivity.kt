@@ -6,14 +6,14 @@ import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.iw.gizlysoz.Level.*
+import com.iw.gizlysoz.ProjectManagers.MainManager
 
 class LevelActivity : AppCompatActivity(), CrossViewOutput {
 
     private lateinit var view: View
     lateinit var crossView: FrameLayout
     lateinit var customKeyboard: FrameLayout
-
-    val viewModel = LevelViewModel()
+    
     var openWordCompletion: ((text: String?) -> Unit)? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -23,7 +23,7 @@ class LevelActivity : AppCompatActivity(), CrossViewOutput {
         hideSystemUI(window, view)
 
         // Получить текущий уровень
-        val level = getIntent().getIntExtra("level",0)
+        val level = MainManager.share.currectLevel
 
         // Установить название экрана
         val actionBar = supportActionBar
@@ -32,8 +32,6 @@ class LevelActivity : AppCompatActivity(), CrossViewOutput {
         actionBar?.setDisplayHomeAsUpEnabled(true)
         actionBar?.show()
 
-        // Получить данные по текущему уровню
-        viewModel.jsonFetch(this, level)
         setupCrossView()
         setupRoundKeyboard()
     }
@@ -59,5 +57,11 @@ class LevelActivity : AppCompatActivity(), CrossViewOutput {
         }
 
         builder.show()
+
+        val manager = MainManager.share
+        if(manager.currectLevel < manager.levelsAll.count()) {
+            manager.currectLevel += 1
+            manager.lastOpenLevel = manager.currectLevel
+        }
     }
 }

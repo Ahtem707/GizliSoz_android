@@ -16,6 +16,7 @@ import androidx.core.view.updateLayoutParams
 import com.iw.gizlysoz.*
 import com.iw.gizlysoz.Extension.DrawView
 import com.iw.gizlysoz.Extension.LinePosition
+import com.iw.gizlysoz.ProjectManagers.MainManager
 import kotlin.math.cos
 import kotlin.math.pow
 import kotlin.math.sin
@@ -31,7 +32,7 @@ fun LevelActivity.setupRoundKeyboard() {
     }
 
     // Получить данные
-    val chars = this.viewModel.levelData?.chars ?: return
+    val chars = MainManager.share.getLevel().chars
 
     // Добавить клавиатуру
     val input = RoundKeyboard.Input(chars)
