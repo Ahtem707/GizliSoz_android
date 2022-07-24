@@ -99,6 +99,10 @@ class RoundKeyboard(context: Context, private val input: Input): RelativeLayout(
     private val touchView = View(context)
     private var charBtnPoints: ArrayList<CharCellData> = ArrayList()
     private var charBtnPointsSelected: ArrayList<CharCellData> = ArrayList()
+    private var shuffleIcon: ImageView? = null
+    private var shuffleButton: Button? = null
+    private var isShuffle: Boolean = false
+
 
     var sendWord: ((word: String) -> Unit)? = null
 
@@ -148,25 +152,25 @@ class RoundKeyboard(context: Context, private val input: Input): RelativeLayout(
         layoutParams.leftMargin = leftOffset
         layoutParams.topMargin = topOffset
 
-        val icon = ImageView(context)
-        icon.setImageDrawable(appearance.shuffleIcon)
-        icon.layoutParams = layoutParams
+        shuffleIcon = ImageView(context)
+        shuffleIcon?.setImageDrawable(appearance.shuffleIcon)
+        shuffleIcon?.layoutParams = layoutParams
         val back = GradientDrawable().apply {
             this.cornerRadius = layout.shuffleSize.width.toFloat()
             this.setColor(appearance.shuffleBg)
         }
-        icon.background = back
+        shuffleIcon?.background = back
 
-        val btn = Button(context)
-        btn.layoutParams = layoutParams
-        btn.background = null
+        shuffleButton = Button(context)
+        shuffleButton?.layoutParams = layoutParams
+        shuffleButton?.background = null
 
-        btn.setOnClickListener {
+        shuffleButton?.setOnClickListener {
             this.shuffle()
         }
 
-        this.addView(icon)
-        this.addView(btn)
+        this.addView(shuffleIcon)
+        this.addView(shuffleButton)
     }
 
     private fun setupChars() {
@@ -188,6 +192,11 @@ class RoundKeyboard(context: Context, private val input: Input): RelativeLayout(
     }
 
     private fun shuffle() {
+        if(isShuffle) return
+        isShuffle = true
+        shuffleIcon?.animate()
+            ?.alpha(0.5f)
+            ?.duration = 300
         val points = charBtnPoints.map { it.point } as? ArrayList<Point> ?: return
         points.shuffle()
         for(i in 0 until charBtnPoints.count()) {
@@ -197,7 +206,13 @@ class RoundKeyboard(context: Context, private val input: Input): RelativeLayout(
             it.cell?.animate()
                 ?.x(it.point.x - it.cell.layoutParams.width/2)
                 ?.y(it.point.y - it.cell.layoutParams.height/2)
-                ?.duration = 1000
+                ?.setDuration(1000)
+                ?.withEndAction {
+                    shuffleIcon?.animate()
+                        ?.alpha(1f)
+                        ?.duration = 300
+                    isShuffle = false
+                }
         }
     }
 
