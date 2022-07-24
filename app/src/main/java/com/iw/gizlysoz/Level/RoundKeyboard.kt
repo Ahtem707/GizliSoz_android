@@ -33,6 +33,8 @@ fun LevelActivity.setupRoundKeyboard() {
 
     // Получить данные
     val chars = MainManager.share.getLevel().chars
+        .split(',')
+        .toTypedArray()
 
     // Добавить клавиатуру
     val input = RoundKeyboard.Input(chars)

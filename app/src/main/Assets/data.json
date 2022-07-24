@@ -3,27 +3,31 @@
     "level": 1,
     "name": "Meraba",
     "size": 6,
-    "chars": ["a","a","b","ş","m","e","r","n","l"],
+    "chars": "a,a,b,ş,m,e,r,n,l",
     "words": {
       "meraba": {
+        "id": 1,
         "chars": ["m","e","r","a","b","a"],
         "x": [0,1,2,3,4,5],
         "y": [3,3,3,3,3,3],
         "description": "Мераба"
       },
       "baş": {
+        "id": 2,
         "chars": ["b","a","ş"],
         "x": [2,3,4],
         "y": [0,0,0],
         "description": "Баш"
       },
       "alma": {
+        "id": 3,
         "chars": ["a","l","m","a"],
         "x": [3,3,3,3],
         "y": [0,1,2,3],
         "description": "Алма"
       },
       "men": {
+        "id": 4,
         "chars": ["m","e","n"],
         "x": [0,0,0],
         "y": [3,4,5],
@@ -35,21 +39,24 @@
     "level": 2,
     "name": "çanta",
     "size": 6,
-    "chars": ["k","ü","n","ç","a","t","a","q","l","e","m"],
+    "chars": "k,ü,n,ç,a,t,a,q,l,e,m",
     "words": {
       "kün": {
+        "id": 11,
         "chars": ["k","ü","n"],
         "x": [0,1,2],
         "y": [2,2,2],
         "description": "День"
       },
       "çanta": {
+        "id": 12,
         "chars": ["ç","a","n","t","a"],
         "x": [2,2,2,2,2],
         "y": [0,1,2,3,4],
         "description": "Сумка"
       },
       "qalem": {
+        "id": 13,
         "chars": ["q","a","l","e","m"],
         "x": [1,2,3,4,5],
         "y": [4,4,4,4,4],

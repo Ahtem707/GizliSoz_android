@@ -28,7 +28,7 @@ class MainManager(val context: Context) {
         val level: Int,
         val name: String,
         val size: Int,
-        val chars: Array<String>,
+        val chars: String,
         val words: Words)
 
     private fun getJsonDataFromAsset(context: Context, fileName: String): String? {
