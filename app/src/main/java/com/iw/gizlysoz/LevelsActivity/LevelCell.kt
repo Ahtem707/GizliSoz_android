@@ -2,10 +2,14 @@ package com.iw.gizlysoz.LevelsActivity
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.Color
+import android.graphics.Interpolator
 import android.graphics.PorterDuff
 import android.graphics.Typeface
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
+import android.util.AttributeSet
+import android.view.animation.Animation
 import android.widget.Button
 import android.widget.FrameLayout
 import androidx.core.content.ContextCompat
@@ -22,7 +26,7 @@ interface LevelCellInterface {
         val layout: Layout,
         val appearance: Appearance,
         var number: Int = 0,
-        var isLock: Boolean = false,
+        var state: State = State.normal,
         var delegate: LevelCellDelegate
     )
 
@@ -42,6 +46,12 @@ interface LevelCellInterface {
     interface LevelCellDelegate {
         fun onClick(index: Int)
     }
+
+    enum class State {
+        lock,
+        normal,
+        selected
+    }
 }
 
 @SuppressLint("ViewConstructor")
@@ -50,7 +60,6 @@ class LevelCell (
     ): FrameLayout(input.context) {
 
     init {
-        println("myLogA: " + input)
         setupSubview()
         setupLayout()
         setupAppearance()
@@ -82,13 +91,27 @@ class LevelCell (
     }
 
     private fun setupContent() {
+
         button.tag = input.number
-        if (input.isLock) {
-            button.text = null
-            button.background = input.appearance.cellLockIcon
-        } else {
-            button.background = null
-            button.text = input.number.toString()
+        when(input.state) {
+            LevelCellInterface.State.lock -> {
+                button.text = null
+                button.background = input.appearance.cellLockIcon
+            }
+            LevelCellInterface.State.normal -> {
+                button.background = null
+                button.text = input.number.toString()
+            }
+            LevelCellInterface.State.selected -> {
+                val a = ContextCompat.getColor(input.context, R.color.red)
+                button.setBackgroundColor(a)
+                button.text = input.number.toString()
+                this.animate()
+                    .setStartDelay(1000)
+                    .rotationX(360f)
+                    .rotationY(360f)
+                    .setDuration(500)
+            }
         }
     }
 }

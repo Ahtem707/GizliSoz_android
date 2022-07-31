@@ -94,15 +94,18 @@ class LevelsScreen: AppCompatActivity(), LevelCellInterface.LevelCellDelegate {
             delegate = this
         )
         val levelsCount = MainManager.share.levelsAll.count()
+        val currectLevel = MainManager.share.currectLevel
         val lastOpenLevel = MainManager.share.lastOpenLevel
-        val adapter = GridAdapter(levelCellInput, levelsCount, lastOpenLevel)
+        val adapter = GridAdapter(levelCellInput, levelsCount, currectLevel, lastOpenLevel)
         gridView.adapter = adapter
     }
 
     override fun onClick(index: Int) {
-        val message = "Siz sectiniz $index sevieni"
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
-        MainManager.share.currectLevel = index
-        this.finish()
+        if(MainManager.share.lastOpenLevel >= index) {
+            val message = "Siz sectiniz $index sevieni"
+            android.widget.Toast.makeText(this, message, android.widget.Toast.LENGTH_SHORT).show()
+            com.iw.gizlysoz.ProjectManagers.MainManager.share.currectLevel = index
+            this.finish()
+        }
     }
 }
