@@ -2,22 +2,18 @@ package com.iw.gizlysoz.LevelsActivity
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.graphics.Color
-import android.graphics.Interpolator
-import android.graphics.PorterDuff
-import android.graphics.Typeface
+import android.graphics.*
 import android.graphics.drawable.Drawable
-import android.graphics.drawable.GradientDrawable
-import android.util.AttributeSet
-import android.view.animation.Animation
+import android.view.animation.*
 import android.widget.Button
 import android.widget.FrameLayout
 import androidx.core.content.ContextCompat
+import com.iw.gizlysoz.Extension.Loop
 import com.iw.gizlysoz.Extension.makeFrameLayout
 import com.iw.gizlysoz.Extension.makeLayout
 import com.iw.gizlysoz.Extension.size
 import com.iw.gizlysoz.R
-import com.iw.gizlysoz.roundedCornersDrawable
+
 
 interface LevelCellInterface {
 
@@ -103,14 +99,25 @@ class LevelCell (
                 button.text = input.number.toString()
             }
             LevelCellInterface.State.selected -> {
-                val a = ContextCompat.getColor(input.context, R.color.red)
+
+                val a = ContextCompat.getColor(input.context, R.color.yellow)
                 button.setBackgroundColor(a)
                 button.text = input.number.toString()
-                this.animate()
-                    .setStartDelay(1000)
-                    .rotationX(360f)
-                    .rotationY(360f)
-                    .setDuration(500)
+
+                var phase = false
+                Loop { me ->
+                    val r = if (phase) 0f else 360f
+                    val animate = animate()
+                    phase = !phase
+                    animate.startDelay = 3000
+                    animate.rotationX(r)
+                    animate.rotationY(r)
+                    animate.duration = 500
+                    animate.withEndAction {
+                        me.next()
+                    }
+                    animate.start()
+                }
             }
         }
     }
