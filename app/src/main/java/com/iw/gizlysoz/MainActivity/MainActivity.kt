@@ -12,7 +12,6 @@ import com.iw.gizlysoz.ProjectManagers.MainManager
 
 class MainActivity : AppCompatActivity() {
 
-    private var maxLevel: Int = 2;
     private var view: View? = null
 
     @RequiresApi(Build.VERSION_CODES.R)

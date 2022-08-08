@@ -3,6 +3,7 @@ package com.iw.gizlysoz.ProjectManagers
 import android.content.Context
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.iw.gizlysoz.Extension.AppStorage
 import java.io.IOException
 
 typealias Words = Map<String, MainManager.Word>
@@ -13,9 +14,29 @@ class MainManager(val context: Context) {
         lateinit var share: MainManager
     }
 
+    private val appStorage: AppStorage
+
     var levelsAll: List<Level> = listOf()
-    var currectLevel: Int = 1
-    var lastOpenLevel: Int = 1
+
+    var currentLevel: Int
+        get() {
+            return appStorage.getInt(AppStorage.Keys.currentLevel, default = 1)
+        }
+        set(newValue) {
+            appStorage.set(AppStorage.Keys.currentLevel, newValue)
+        }
+
+    var lastOpenLevel: Int
+        get() {
+            return appStorage.getInt(AppStorage.Keys.lastOpenLevel, default = 1)
+        }
+        set(newValue) {
+            appStorage.set(AppStorage.Keys.lastOpenLevel, newValue)
+        }
+
+    init {
+        appStorage = AppStorage(context)
+    }
 
     data class Word(
         val chars: Array<String>,
@@ -51,6 +72,6 @@ class MainManager(val context: Context) {
     }
 
     fun getLevel(): Level {
-        return levelsAll.filter { it.level == currectLevel }.first()
+        return levelsAll.filter { it.level == currentLevel }.first()
     }
 }

@@ -23,7 +23,8 @@ class LevelActivity : AppCompatActivity(), CrossViewOutput {
         hideSystemUI(window, view)
 
         // Получить текущий уровень
-        val level = MainManager.share.currectLevel
+
+        val level = MainManager.share.currentLevel
 
         // Установить название экрана
         val actionBar = supportActionBar
@@ -59,9 +60,9 @@ class LevelActivity : AppCompatActivity(), CrossViewOutput {
         builder.show()
 
         val manager = MainManager.share
-        if(manager.currectLevel < manager.levelsAll.count()) {
-            manager.currectLevel += 1
-            manager.lastOpenLevel = manager.currectLevel
+        if(manager.currentLevel < manager.levelsAll.count()) {
+            manager.currentLevel += 1
+            manager.lastOpenLevel = manager.currentLevel
         }
     }
 }
