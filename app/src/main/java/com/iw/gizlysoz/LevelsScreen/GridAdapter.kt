@@ -1,4 +1,4 @@
-package com.iw.gizlysoz.LevelsActivity
+package com.iw.gizlysoz.LevelsScreen
 
 import android.view.View
 import android.view.ViewGroup

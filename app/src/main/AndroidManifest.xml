@@ -10,13 +10,13 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.GizlySöz">
         <activity
-            android:name=".LevelActivity"
+            android:name=".CurrentLevelScreen.CurrentLevelActivity"
             android:exported="false" />
         <activity
-            android:name=".LevelsScreen"
+            android:name=".LevelsScreen.LevelsActivity"
             android:exported="false" />
         <activity
-            android:name=".MainActivity.MainActivity"
+            android:name=".MainScreen.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

@@ -1,18 +1,17 @@
-package com.iw.gizlysoz.MainActivity
+package com.iw.gizlysoz.MainScreen
 
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import android.view.View
 import android.widget.Button
 import androidx.annotation.RequiresApi
-import androidx.appcompat.app.AppCompatActivity
-import com.iw.gizlysoz.*
+import com.iw.gizlysoz.CurrentLevelScreen.CurrentLevelActivity
+import com.iw.gizlysoz.Extension.BaseActivity
+import com.iw.gizlysoz.LevelsScreen.LevelsActivity
 import com.iw.gizlysoz.ProjectManagers.MainManager
+import com.iw.gizlysoz.R
 
-class MainActivity : AppCompatActivity() {
-
-    private var view: View? = null
+class MainActivity : BaseActivity() {
 
     @RequiresApi(Build.VERSION_CODES.R)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -22,45 +21,39 @@ class MainActivity : AppCompatActivity() {
 
         val levelBtn = findViewById<Button>(R.id.levelBtn)
         levelBtn.setOnClickListener {
-            openLevelSelect();
+            openLevelSelect()
         }
 
         val startBtn = findViewById<Button>(R.id.startBtn)
         startBtn.setOnClickListener {
-            openActivity();
+            openActivity()
         }
 
-        startBtn.setBackgroundColor(R.color.green.toColor(this))
+        startBtn.setBackgroundColor(Resource(R.color.green))
 
         // Создаем менеджер
         MainManager.share = MainManager(this)
         MainManager.share.loadLevels()
     }
 
-    override fun onWindowFocusChanged(hasFocus: Boolean) {
-        super.onWindowFocusChanged(hasFocus)
-        view?.let { view ->
-            hideSystemUI(window, view)
-        }
-    }
-
     private fun setupSubview() {
-        view = findViewById(R.id.MainView)
+
     }
 
     private fun openLevelSelect() {
 
         val intent = Intent(
             this,
-            LevelsScreen::class.java
+            LevelsActivity::class.java
         )
+        intent.Ac
         startActivity(intent)
     }
 
     private fun openActivity() {
         val intent = Intent(
             this,
-            LevelActivity::class.java
+            CurrentLevelActivity::class.java
         )
         startActivity(intent)
     }

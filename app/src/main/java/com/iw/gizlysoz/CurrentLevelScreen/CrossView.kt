@@ -1,14 +1,16 @@
-package com.iw.gizlysoz.Level
+package com.iw.gizlysoz.CurrentLevelScreen
 
 import android.content.Context
 import android.util.Log
 import android.view.Gravity
+import android.view.ViewGroup
 import android.widget.*
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.view.children
 import androidx.core.view.updateLayoutParams
-import com.iw.gizlysoz.LevelActivity
+import com.iw.gizlysoz.Extension.makeFrameLayout
+import com.iw.gizlysoz.Extension.size
 import com.iw.gizlysoz.ProjectManagers.MainManager
 import com.iw.gizlysoz.ProjectManagers.Words
 import com.iw.gizlysoz.R
@@ -17,15 +19,14 @@ interface CrossViewOutput {
     fun complete()
 }
 
-fun LevelActivity.setupCrossView() {
-    val layout = CrossView.Layout(this)
-    crossView.updateLayoutParams<ConstraintLayout.LayoutParams> {
-        width = layout.crossView.toInt()
-        height = layout.crossView.toInt()
-    }
+fun CurrentLevelActivity.setupCrossView() {
+
     val input = CrossView.Input(this)
     val crossView = CrossView(this, input)
-    this.crossView.addView(crossView)
+    val width = this.crossView?.layoutParams?.width ?: 0
+    val height = this.crossView?.layoutParams?.height ?: 0
+    crossView.layoutParams = ViewGroup.LayoutParams(width, height)
+    this.crossView?.addView(crossView)
     this.openWordCompletion = { word ->
         crossView.openWord(word)
     }
@@ -41,7 +42,6 @@ class CrossView(context: Context, private val input: Input): RelativeLayout(cont
     class Layout(context: Context): CharCell.Layout {
         val wrap = ConstraintLayout.LayoutParams.WRAP_CONTENT
         val parent = ConstraintLayout.LayoutParams.MATCH_PARENT
-        val crossView = 1000f
         override val cellSize = 140f
         val spaces = 30
     }

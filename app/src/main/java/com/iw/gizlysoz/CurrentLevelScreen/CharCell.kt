@@ -1,4 +1,4 @@
-package com.iw.gizlysoz.Level
+package com.iw.gizlysoz.CurrentLevelScreen
 
 import android.content.Context
 import android.graphics.drawable.GradientDrawable

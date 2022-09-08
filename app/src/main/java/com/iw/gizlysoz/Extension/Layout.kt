@@ -1,24 +1,28 @@
 package com.iw.gizlysoz.Extension
 
 import android.content.Context
+import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AnimationSet
 import android.widget.FrameLayout
 import android.widget.GridLayout
 import android.widget.LinearLayout
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.constraintlayout.widget.ConstraintSet
 
-open class Layouts(context: Context) {
+abstract class Layout(val context: Context) {
     val wrap = ViewGroup.LayoutParams.WRAP_CONTENT
     val parent = ViewGroup.LayoutParams.MATCH_PARENT
-}
-
-fun makeFrameLayout(): FrameLayout.LayoutParams {
-    val wrap = FrameLayout.LayoutParams.WRAP_CONTENT
-    return FrameLayout.LayoutParams(wrap, wrap)
 }
 
 fun makeLayout(): ViewGroup.LayoutParams {
     val wrap = ViewGroup.LayoutParams.WRAP_CONTENT
     return ViewGroup.LayoutParams(wrap, wrap)
+}
+
+fun makeFrameLayout(): FrameLayout.LayoutParams {
+    val wrap = FrameLayout.LayoutParams.WRAP_CONTENT
+    return FrameLayout.LayoutParams(wrap, wrap)
 }
 
 fun makeMarginLayout(): ViewGroup.MarginLayoutParams {
@@ -101,3 +105,59 @@ fun <T>T.gravity(value: Int): T where T: GridLayout.LayoutParams {
     this.setGravity(value)
     return this
 }
+
+fun <T>T.gravity(value: Int): T where T: FrameLayout.LayoutParams {
+    this.gravity = value
+    return this
+}
+
+fun ConstraintLayout.makeConstrains(): ConstraintSet {
+    return ConstraintSet()
+}
+
+fun ConstraintSet.pinSize(view: View, value: Int): ConstraintSet {
+    this.constrainWidth(view.id, value)
+    this.constrainHeight(view.id, value)
+    return this
+}
+
+fun ConstraintSet.pinWidth(view: View, value: Int): ConstraintSet {
+    this.constrainWidth(view.id, value)
+    return this
+}
+
+fun ConstraintSet.pinHeight(view: View, value: Int): ConstraintSet {
+    this.constrainHeight(view.id, value)
+    return this
+}
+
+fun ConstraintSet.pinTopToSuperview(view: View, value: Int): ConstraintSet {
+    this.connect(view.id, ConstraintSet.TOP, ConstraintSet.PARENT_ID, ConstraintSet.TOP, value)
+    return this
+}
+
+fun ConstraintSet.pinBottomToSuperview(view: View, value: Int): ConstraintSet {
+    this.connect(view.id, ConstraintSet.BOTTOM, ConstraintSet.PARENT_ID, ConstraintSet.BOTTOM, value)
+    return this
+}
+
+fun ConstraintSet.pinHCenterToSuperview(view: View, value: Int): ConstraintSet {
+    this.centerHorizontally(view.id, ConstraintSet.PARENT_ID)
+    return this
+}
+
+fun ConstraintSet.pinVCenterToSuperview(view: View, value: Int): ConstraintSet {
+    this.centerVertically(view.id, ConstraintSet.PARENT_ID)
+    return this
+}
+
+fun ConstraintSet.pinCenterToSuperview(view: View, value: Int): ConstraintSet {
+    this.centerHorizontally(view.id, ConstraintSet.PARENT_ID)
+    this.centerVertically(view.id, ConstraintSet.PARENT_ID)
+    return this
+}
+
+fun ConstraintSet.apply(constraintLayout: ConstraintLayout) {
+    this.applyTo(constraintLayout)
+}
+

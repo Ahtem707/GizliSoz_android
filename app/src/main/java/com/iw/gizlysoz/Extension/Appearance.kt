@@ -4,9 +4,14 @@ import android.content.Context
 import androidx.core.content.ContextCompat
 import com.iw.gizlysoz.R
 
-open class Appearances(context: Context) {
-    val red = ContextCompat.getColor(context, R.color.red)
-    val yellow = ContextCompat.getColor(context, R.color.yellow)
-    val green = ContextCompat.getColor(context, R.color.green)
-    val blue = ContextCompat.getColor(context, R.color.lineColor)
+abstract class Appearance(val context: Context) {
+
+    val red = getColor(R.color.red)
+    val yellow = getColor(R.color.yellow)
+    val green = getColor(R.color.green)
+    val blue = getColor(R.color.lineColor)
+
+    private fun getColor(color: Int): Int {
+        return ContextCompat.getColor(context, color)
+    }
 }
