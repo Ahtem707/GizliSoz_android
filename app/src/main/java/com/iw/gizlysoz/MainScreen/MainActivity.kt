@@ -46,7 +46,6 @@ class MainActivity : BaseActivity() {
             this,
             LevelsActivity::class.java
         )
-        intent.Ac
         startActivity(intent)
     }
 
